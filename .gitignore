@@ -1,4 +1,1 @@
-nbproject/
-.idea
-*.iml
-vendor
+node_modules
