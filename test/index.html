@@ -1,0 +1,120 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es-ES">
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" href="style.css">
+<script type="text/javascript"
+        src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script type="text/javascript"
+        src="https://js.openpay.mx/openpay.v1.min.js"></script>
+<script type='text/javascript'
+  src="https://js.openpay.mx/openpay-data.v1.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    var success_callbak = function(response) {
+        var token_id = response.data.id;
+        console.log(token_id);
+    };
+    var error_callbak = function(response) {
+        var desc = response.data.description != undefined ?
+        response.data.description : response.message;
+        alert("ERROR [" + response.status + "] " + desc);
+    };
+	OpenPay.setSandboxMode(true);
+    OpenPay.setId('msrmt2amtq1l2fw1yp9z');
+    OpenPay.setApiKey('pk_3a2472a9794f4b1e828e0cde7bffb4ba');
+    var form = OpenPay.token.extractFormInfo('card',success_callbak,error_callbak);
+    // OpenPay.token.create(form, success_callbak, error_callbak);
+});
+$(document).on('click','#confirm_button',function() {
+    OpenPay.token.extractFormAndCreate('card',function (response) {
+        var token_id = response.data.id;
+        var deviceSessionId = OpenPay.deviceData.setup("card", "deviceIdHiddenFieldName");
+        $.ajax({
+            url: 'pago.php',
+            type: 'POST',
+            data: 'id='+token_id +'&deviceSessionId='+deviceSessionId,
+            success: function(data){
+            }
+        });
+    });
+   
+});
+</script>
+<input type="hidden" id="deviceIdHiddenFieldName" />
+<div class="container">
+    <div class="price">
+        <h1>Pago por $100.00 MXN</h1>
+    </div>
+    <div class="card__container">
+        <form class="card" id="card">
+            <div class="row credit">
+                <div class="left">
+                    <input id="cd" type="radio" name="payment" />
+                    <div class="radio"></div>
+                    <label for="cd">Tarjeta de debito o credito</label>
+                </div>
+            </div>
+            <div class="row cardholder">
+                <div class="info">
+                    <label for="cardholdername">Nombre</label>
+                    <input placeholder="e.g. Richard Bovell" id="cardholdername" type="text" data-openpay-card="holder_name" value="Juan Robles"/>
+                </div>
+            </div>
+            <div class="row number">
+                <div class="info">
+                    <label for="cardnumber">Numero de la tarjeta</label>
+                    <input id="cardnumber" type="text" pattern="[0-9]{16,19}" maxlength="19" placeholder="8888-8888-8888-8888"/ data-openpay-card="card_number" value="4111111111111111">
+                </div>
+            </div>
+            <div class="row details">
+                <div class="left">
+                    <label for="expiry-date">Expiración</label>
+                    <select id="expiry-date" data-openpay-card="expiration_month">
+                        <option>MM</option>
+                        <option value="1">01</option>
+                        <option value="2">02</option>
+                        <option value="3">03</option>
+                        <option value="4">04</option>
+                        <option value="5">05</option>
+                        <option value="6">06</option>
+                        <option value="7">07</option>
+                        <option value="8">08</option>
+                        <option value="9" selected>10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                    </select>
+                    <span>/</span>
+                     <select id="expiry-date" data-openpay-card="expiration_year" value="26">
+                        <option>YYYY</option>
+                        <option value="16">2016</option>
+                        <option value="17">2017</option>
+                        <option value="18">2018</option>
+                        <option value="19">2019</option>
+                        <option value="20">2020</option>
+                        <option value="21">2021</option>
+                        <option value="22">2022</option>
+                        <option value="23">2023</option>
+                        <option value="24">2024</option>
+                        <option value="25">2025</option>
+                        <option value="26" selected>2026</option>
+                        <option value="27">2027</option>
+                        <option value="28">2028</option>
+                        <option value="29">2029</option>
+                        <option value="30">2030</option>
+                    </select>
+                </div>
+                <div class="right">
+                    <label for="cvv">CVC/CVV</label>
+                    <input type="text" maxlength="4" data-openpay-card="cvv2" value="123"/>
+                    <span data-balloon-length="medium" data-balloon="The 3 or 4-digit number on the back of your card." data-balloon-pos="up">i</span>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="button">
+        <button type="submit" id="confirm_button"><i class="ion-locked"></i> Confirmar y pagar</button>
+    </div>
+</div>
+
+</html>
